@@ -1,4 +1,4 @@
-package com.stupidcoder.coder.core;
+package stupidcoder.simulator;
 
 import java.util.ArrayList;
 import java.util.List;

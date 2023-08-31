@@ -1,10 +1,10 @@
-package com.stupidcoder.coder.core.operations;
+package stupidcoder.simulator.operations;
 
-import com.stupidcoder.coder.core.ActionUtil;
-import com.stupidcoder.coder.core.IRobotAction;
-import com.stupidcoder.coder.core.OperationHandler;
-import com.stupidcoder.util.input.IInput;
-import com.stupidcoder.util.input.StringInput;
+import stupidcoder.simulator.ActionUtil;
+import stupidcoder.simulator.IRobotAction;
+import stupidcoder.simulator.Simulator;
+import stupidcoder.util.input.IInput;
+import stupidcoder.util.input.StringInput;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -19,22 +19,43 @@ public class OpWriteCode implements IRobotAction {
 
     @Override
     public void run(Robot robot) {
-        for (String slice : slices) {
-            IInput input = new StringInput(slice);
-            while (input.available()) {
-                int b = input.read();
-                if (b < 0) {
-                    input.retract();
-                    System.err.println("skipping non ascii char: " + input.readUtfChar());
-                    actions['?'].write(b,robot);
-                    continue;
+        if (slices.isEmpty() || robot == null) {
+            return;
+        }
+        for (int i = 0 ; i < slices.size() - 1 ; i ++) {
+            writeSlice(slices.get(i), robot);
+            ActionUtil.clickButton(robot, KeyEvent.VK_ENTER, 1, Simulator.DELAY);
+            ActionUtil.clickButton(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, 10, Simulator.DELAY);
+        }
+        writeSlice(slices.get(slices.size() - 1), robot);
+    }
+
+    private void writeSlice(String slice, Robot robot) {
+        System.out.printf("\033[33m>> %s\n\33[0m", slice);
+        IInput input = new StringInput(slice);
+        int spaceCount = 0;
+        while (input.available()) {
+            int b = input.read();
+            if (b < 0) {
+                input.retract();
+                System.err.println("skipping non ascii char: " + input.readUtfChar());
+                actions['?'].write(b,robot);
+                continue;
+            }
+            if (b == ' ') {
+                spaceCount++;
+                if (spaceCount == 4) {
+                    ActionUtil.clickButton(robot, KeyEvent.VK_TAB, 1, Simulator.DELAY);
+                    spaceCount = 0;
+                }
+            } else {
+                if (spaceCount > 0) {
+                    ActionUtil.clickButton(robot, KeyEvent.VK_SPACE, spaceCount, Simulator.DELAY);
+                    spaceCount = 0;
                 }
                 actions[b].write(b, robot);
             }
-            ActionUtil.clickButton(robot, KeyEvent.VK_ENTER, 1, OperationHandler.DELAY);
-            ActionUtil.clickButton(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, 10, 5);
         }
-        ActionUtil.clickButton(robot, KeyEvent.VK_BACK_SPACE, 1, OperationHandler.DELAY);
     }
     
     private interface ICharWriter {
@@ -44,13 +65,13 @@ public class OpWriteCode implements IRobotAction {
     private static final ICharWriter NULL = (i, robot) -> {};
 
     private static final ICharWriter DEFAULT =
-            (i, robot) -> ActionUtil.clickButton(robot, i, 1, OperationHandler.DELAY);
+            (i, robot) -> ActionUtil.clickButton(robot, i, 1, Simulator.DELAY >> 2);
 
     private static final ICharWriter UPPER = (i, r) ->
-            ActionUtil.clickButton(r, KeyEvent.VK_SHIFT,(i - 'A') + KeyEvent.VK_A, 1, OperationHandler.DELAY);
+            ActionUtil.clickButton(r, KeyEvent.VK_SHIFT,(i - 'A') + KeyEvent.VK_A, 1, Simulator.DELAY >> 2);
 
     private static final ICharWriter LOWER =
-            (i, r) -> ActionUtil.clickButton(r, (i - 'a') + KeyEvent.VK_A, 1, OperationHandler.DELAY);
+            (i, r) -> ActionUtil.clickButton(r, (i - 'a') + KeyEvent.VK_A, 1, Simulator.DELAY >> 2);
 
     private static ICharWriter[] actions = new ICharWriter[]{
             NULL,                  /* 00 (NUL) */
@@ -184,11 +205,15 @@ public class OpWriteCode implements IRobotAction {
     };
     
     private static ICharWriter shifted(int keyCode) {
-        return (i, r) -> ActionUtil.clickButton(r,KeyEvent.VK_SHIFT , keyCode, 1, OperationHandler.DELAY);
+        return (i, r) -> ActionUtil.clickButton(r,KeyEvent.VK_SHIFT , keyCode, 1, Simulator.DELAY >> 2);
     }
     
     private static ICharWriter normal(int keyCode) {
-        return (i, r) -> ActionUtil.clickButton(r, keyCode, 1, OperationHandler.DELAY);
+        return (i, r) -> ActionUtil.clickButton(r, keyCode, 1, Simulator.DELAY >> 2);
     }
 
+    @Override
+    public String toString() {
+        return String.format("writing %d slices", slices.size());
+    }
 }

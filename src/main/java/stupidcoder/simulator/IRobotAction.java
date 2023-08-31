@@ -1,4 +1,4 @@
-package com.stupidcoder.coder.core;
+package stupidcoder.simulator;
 
 import java.awt.*;
 

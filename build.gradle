@@ -6,17 +6,19 @@ group = 'com.stupidcoder'
 version = '1.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven {
-        url = 'file://C:\\Users\\stupid_coder_jyy\\Desktop\\cs\\mavenlocal'
-    }
+}
+
+tasks.compileJava {
+    options.encoding = "utf-8"
 }
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    implementation 'com.stupidcoder:common-util:1.0'
+    implementation 'stupidcoder:common-util:1.0.1'
 }
 
 test {
