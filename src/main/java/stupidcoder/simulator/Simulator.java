@@ -2,8 +2,8 @@ package stupidcoder.simulator;
 
 import stupidcoder.simulator.operations.OpGoto;
 import stupidcoder.simulator.operations.OpWriteCode;
-import stupidcoder.util.input.BufferedInput;
 
+import stupidcoder.util.input.BufferedInput;
 import stupidcoder.util.input.IInput;
 import stupidcoder.util.input.InputException;
 
@@ -15,14 +15,18 @@ public class Simulator {
     public static final int DELAY = 20;
     protected final List<List<String>> slices = new ArrayList<>();
     private final PosManager manager;
-    private final Robot robot;
+    private Robot robot;
+    protected int startIndex = 0;
+    protected int endIndex = Integer.MAX_VALUE;
+    private int waitTime;
 
     private Pos prevEnd = null;
-    private final int startIndex;
 
-    private Simulator(IInput input, int waitTime, int startIndex, boolean simulate) {
-        this.startIndex = startIndex;
+    public Simulator() {
         manager = new PosManager(this);
+    }
+
+    public void run(IInput input, boolean simulate) {
         BlockLoader loader = new BlockLoader(this, input);
         try {
             loader.loadBlock();
@@ -44,21 +48,9 @@ public class Simulator {
         input.close();
     }
 
-    public static void run(String path, int waitTime, int startIndex) {
-        new Simulator(BufferedInput.fromResource(path), waitTime, startIndex, false);
+    public void run(String file, boolean simulate) {
+        this.run(BufferedInput.fromResource(file), simulate);
     }
-
-    public static void run(String path, int waitTime) {
-        new Simulator(BufferedInput.fromResource(path), waitTime, 0, false);
-    }
-
-    public static void simulate(String path, int waitTime, int startIndex) {
-        new Simulator(BufferedInput.fromResource(path), waitTime, startIndex, true);
-    }
-    public static void simulate(String path, int waitTime) {
-        new Simulator(BufferedInput.fromResource(path), waitTime, 0, true);
-    }
-
 
     protected void onBlockLoaded(Block parent, Block b) {
         manager.registerBlocks(parent, b);
@@ -68,7 +60,7 @@ public class Simulator {
         if (b.height == 0) {
             return;
         }
-        if (b.userId < startIndex) {
+        if (b.userId < startIndex || b.userId > endIndex) {
             System.out.println("ignored: " + b.userId);
             return;
         }
@@ -90,5 +82,14 @@ public class Simulator {
             System.out.println("task: " + action);
             action.run(robot);
         }
+    }
+
+    public void setRange(int startIndex, int endIndex) {
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
+    }
+
+    public void setWaitTime(int waitTime) {
+        this.waitTime = waitTime;
     }
 }

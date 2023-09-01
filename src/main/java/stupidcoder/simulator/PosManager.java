@@ -12,7 +12,7 @@ public class PosManager {
     private final Block generatedRoot = Block.of();
     private final Simulator simulator;
 
-    public PosManager(Simulator simulator) {
+    protected PosManager(Simulator simulator) {
         this.simulator = simulator;
         rawBlocks.add(root);
     }
