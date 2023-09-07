@@ -70,8 +70,7 @@ public class Simulator {
         } else {
             prevEnd = new Pos(0, 0);
         }
-        OpWriteCode taskWrite = new OpWriteCode(slices.get(b.userId));
-        runTasK(b, taskWrite);
+        runTasK(b, new OpWriteCode(slices.get(b.userId)));
         prevEnd.set(start).shift(b.width, b.height - 1); //下一轮的起始位置
     }
 

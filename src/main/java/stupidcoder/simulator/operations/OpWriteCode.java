@@ -73,7 +73,7 @@ public class OpWriteCode implements IRobotAction {
     private static final ICharWriter LOWER =
             (i, r) -> ActionUtil.clickButton(r, (i - 'a') + KeyEvent.VK_A, 1, Simulator.DELAY >> 2);
 
-    private static ICharWriter[] actions = new ICharWriter[]{
+    private static final ICharWriter[] actions = new ICharWriter[]{
             NULL,                  /* 00 (NUL) */
             NULL,                  /* 01 (SOH) */
             NULL,                  /* 02 (STX) */

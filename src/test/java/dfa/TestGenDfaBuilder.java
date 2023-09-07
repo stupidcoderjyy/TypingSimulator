@@ -27,4 +27,19 @@ public class TestGenDfaBuilder {
         s.setRange(50, 100);
         s.run("/cc1/DFABuilder.java", false);
     }
+
+    @Test
+    public void genMain() {
+        Simulator s = new Simulator();
+        s.setWaitTime(2000);
+        s.setRange(6, 100);
+        s.run("/cc1/Main.java", false);
+    }
+
+    @Test
+    public void test() {
+        Simulator s = new Simulator();
+        s.setWaitTime(2000);
+        s.run("/cc1/DFABuilder.java", false);
+    }
 }

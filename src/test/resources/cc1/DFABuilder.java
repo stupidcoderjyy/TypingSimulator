@@ -1,7 +1,7 @@
 package com.stupidcoder.cc.lex.core;
 
 $1$
-import com.stupidcoder.cc.util.ArrayUtil;
+import stupidcoder.util.ArrayUtil;
 
 import java.util.*;
 
@@ -211,11 +211,7 @@ public class DFABuilder {
             if (curGroup.size() == 1) {
                 continue;
             }
-            Set<Integer> newGroup = split(curGroup);
-            if (newGroup != null) {
-                unchecked.add(curGroupId);
-                createGroup(newGroup);
-            }
+            split(curGroup);
             $$
         }
         $$
@@ -246,21 +242,21 @@ public class DFABuilder {
     }
 
     $$
-    $31$
-    private Set<Integer> split(Set<Integer> curGroup) {
-        $32$
+    $33$
+    private void split(Set<Integer> curGroup) {
+        $34$
         Set<Integer> newGroup = null;
         int std = curGroup.iterator().next();
         curGroup.remove(std);
+        List<Integer> removed = new ArrayList<>();
         for (byte b = 0 ; b >= 0 ; b ++) {
-            $33$
+            $35$
             if (curGroup.isEmpty()) {
                 break;
             }
             int stdTarget = stateToGroup[goTo.get(std)[b]];
-            List<Integer> removed = new ArrayList<>();
             for (int s : curGroup) {
-                $34$
+                $36$
                 int sTarget = stateToGroup[goTo.get(s)[b]];
                 if (stdTarget != sTarget) {
                     if (newGroup == null) {
@@ -272,17 +268,22 @@ public class DFABuilder {
                 $$
             }
             removed.forEach(curGroup::remove);
+            removed.clear();
             $$
         }
+        $37$
         curGroup.add(std);
-        return newGroup;
+        if (newGroup != null) {
+            createGroup(newGroup);
+        }
+        $$
         $$
     }
 
     $$
-    $35$
+    $31$
     private void createGroup(Set<Integer> states) {
-        $36$
+        $32$
         int groupId = groupCount++;
         groups.add(states);
         for (int state : states) {

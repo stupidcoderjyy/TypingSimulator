@@ -42,4 +42,13 @@ public class TestGenRegexAndNfa {
         s.setWaitTime(2000);
         s.run("/cc1/NFARegexParser.java", false);
     }
+
+
+    @Test
+    public void genMain() {
+        Simulator s = new Simulator();
+        s.setWaitTime(2000);
+        s.setRange(1, 5);
+        s.run("/cc1/Main.java", false);
+    }
 }
