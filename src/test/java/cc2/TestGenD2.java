@@ -1,55 +1,56 @@
-package test;
+package cc2;
 
 import org.junit.jupiter.api.Test;
 import stupidcoder.simulator.Simulator;
 
-public class TestGen {
+public class TestGenD2 {
+
     @Test
-    public void test1() {
+    public void genCodes() {
         Simulator s = new Simulator();
         s.setWaitTime(2000);
-        s.run("/core/test1.txt", false);
+        s.run("/cc2/d2/Codes.java", false);
     }
 
     @Test
-    public void test2() {
+    public void genFunction() {
         Simulator s = new Simulator();
         s.setWaitTime(2000);
-        s.run("/core/test2.txt", false);
+        s.run("/cc2/d2/Function.java", false);
     }
 
     @Test
-    public void test3() {
+    public void genFuncDefined() {
         Simulator s = new Simulator();
         s.setWaitTime(2000);
-        s.run("/core/test3.txt", false);
+        s.run("/cc2/d2/FuncDefined.java", false);
     }
 
     @Test
-    public void test4() {
+    public void genFuncPrintln() {
         Simulator s = new Simulator();
         s.setWaitTime(2000);
-        s.run("/core/test4.txt", false);
+        s.run("/cc2/d2/FuncPrintln.java", false);
     }
 
     @Test
-    public void test5() {
+    public void genFuncRand() {
         Simulator s = new Simulator();
         s.setWaitTime(2000);
-        s.run("/core/test5.txt", false);
+        s.run("/cc2/d2/FuncRand.java", false);
     }
 
     @Test
-    public void test6() {
+    public void genStackFrame() {
         Simulator s = new Simulator();
         s.setWaitTime(2000);
-        s.run("/core/test6.txt", false);
+        s.run("/cc2/d2/StackFrame.java", false);
     }
 
     @Test
-    public void test7() {
+    public void genEnv() {
         Simulator s = new Simulator();
         s.setWaitTime(2000);
-        s.run("/core/test7.txt", false);
+        s.run("/cc2/d2/Env.java", false);
     }
 }

@@ -4,8 +4,6 @@ import stupidcoder.simulator.operations.OpGoto;
 import stupidcoder.simulator.operations.OpWriteCode;
 
 import stupidcoder.util.input.BufferedInput;
-import stupidcoder.util.input.IInput;
-import stupidcoder.util.input.InputException;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,8 +11,8 @@ import java.util.List;
 
 public class Simulator {
     public static final int DELAY = 20;
-    protected final List<List<String>> slices = new ArrayList<>();
-    private final PosManager manager;
+    protected List<List<String>> slices;
+    private PosManager manager;
     private Robot robot;
     protected int startIndex = 0;
     protected int endIndex = Integer.MAX_VALUE;
@@ -22,21 +20,15 @@ public class Simulator {
 
     private Pos prevEnd = null;
 
-    public Simulator() {
-        manager = new PosManager(this);
-    }
-
-    public void run(IInput input, boolean simulate) {
+    public void run(BufferedInput input, boolean simulate) {
+        this.slices = new ArrayList<>();
+        this.manager = new PosManager(this);
+        this.prevEnd = null;
         BlockLoader loader = new BlockLoader(this, input);
         try {
             loader.loadBlock();
         } catch (Exception e) {
-            if (e instanceof InputException ie) {
-                ie.printStackTraceAndClose();
-            } else {
-                e.printStackTrace();
-            }
-            System.exit(e.hashCode());
+            e.printStackTrace();
         }
         try {
             this.robot = simulate ? null : new Robot();

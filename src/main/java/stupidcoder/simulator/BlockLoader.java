@@ -1,74 +1,79 @@
 package stupidcoder.simulator;
 
 import stupidcoder.util.ArrayUtil;
-import stupidcoder.util.input.IInput;
+import stupidcoder.util.input.BufferedInput;
 import stupidcoder.util.input.InputException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlockLoader {
-    private final IInput input;
+    private final BufferedInput input;
     private final Block root = Block.of();
     private final List<List<String>> idToSlices;
     private final Simulator simulator;
 
-    protected BlockLoader(Simulator simulator, IInput input) {
+    protected BlockLoader(Simulator simulator, BufferedInput input) {
         this.simulator = simulator;
         this.idToSlices = simulator.slices;
         this.input = input;
     }
 
     protected void loadBlock() {
-        while (input.available()) {
-            if (input.read() == '$') {
-                loadBlock(root, 0);
-            }
-            input.markLexemeStart();
+        if (input.find('$') < 0) {
+            return;
         }
+        loadBlock(root, 0);
     }
 
     private void loadBlock(Block parent, int offsetY) {
         int id = readId();
         if (id < parent.userId) {
-            throw new RuntimeException(String.format(
+            throw new InputException(String.format(
                         "child block id lower than parent (child: %d, parent : %d)",
                         id, parent.userId));
         }
         ArrayUtil.resize(idToSlices, id + 1, ArrayList::new);
         //对每一行进行读取（忽略每行开始的空格）
-        input.markLexemeStart();
         int height = 0;  //高度不包含子块
         Block block = Block.of(id);
         LOOP:
         while (true) {
+            input.mark();
+            input.skip(' ');
             if (!input.available()) {
-                throw new InputException(input, "Unclosed block (id : " + id + ")");
+                throw new InputException("Unclosed block (id : " + id + ")");
             }
             int b = input.read();
             switch (b) {
-                case '\r' -> {
-                    height++;
-                    input.retract();
-                    String lexeme = input.lexeme();
-                    idToSlices.get(id).add(lexeme.equals("\n") ? "" : lexeme);
-                    input.skip(2);
-                    input.markLexemeStart();
-                }
-                case '$' -> {
+                case '$':
+                    input.removeMark();
                     if (input.read() == '$') {
-                        skipLine();
-                        input.markLexemeStart();
+                        input.skipLine();
                         break LOOP;
                     }
                     input.retract();
                     loadBlock(block, height);
-                }
-                case '%' -> {
+                    break;
+                case '%':
                     if (input.read() == '%') {
+                        input.removeMark();
                         ignoreLines();
                     }
-                }
+                    break;
+                case '#':
+                    input.removeMark();
+                    input.mark();
+                default:
+                    height++;
+                    if (b == '\r') {
+                        input.retract();
+                    }
+                    input.approach('\r');
+                    input.mark();
+                    idToSlices.get(id).add(input.capture());
+                    input.skipLine();
+                    break;
             }
         }
         List<String> slices = idToSlices.get(id);
@@ -82,49 +87,25 @@ public class BlockLoader {
     }
 
     private int readId() {
-        try {
-            input.markLexemeStart();
-            int result;
-            while (true) {
-                int b = input.read();
-                if (b == '$') {
-                    input.retract();
-                    result = Integer.parseInt(input.lexeme());
-                    break;
-                }
-            }
-            skipLine();
-            return result;
-        } catch (Exception e) {
-            throw new InputException(input, e);
-        }
+        input.mark();
+        input.approach('$');
+        input.mark();
+        int result = Integer.parseInt(input.capture());
+        input.skipLine();
+        return result;
     }
 
     private void ignoreLines() {
         try {
             while (true) {
+                input.find('%');
                 if (input.read() == '%') {
-                    if (input.read() != '%') {
-                        input.retract();
-                        continue;
-                    }
-                    skipLine();
-                    input.skipSpaceAndTab();
+                    input.skipLine();
                     return;
                 }
-                input.markLexemeStart();
             }
-        } catch (InputException e) {
-            throw new InputException(input, "unclosed ignore area");
-        }
-    }
-
-    private void skipLine() {
-        while (input.available()) {
-            if (input.read() == '\r') {
-                input.read();
-                return;
-            }
+        } catch (Exception e) {
+            throw new InputException("unclosed ignore area");
         }
     }
 }
