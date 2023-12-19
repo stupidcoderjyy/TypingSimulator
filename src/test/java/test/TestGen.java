@@ -52,4 +52,11 @@ public class TestGen {
         s.setWaitTime(2000);
         s.run("/core/test7.txt", false);
     }
+
+    @Test
+    public void test8() {   //实现熵变配方调用
+        Simulator s = new Simulator();
+        s.setWaitTime(2000);
+        s.run("/core/test8.txt", false);
+    }
 }

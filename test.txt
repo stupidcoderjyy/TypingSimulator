@@ -1,10 +1,3 @@
-    private final EnvBuilder builder = EnvBuilder.INSTANCE;
-import stupidcoder.compile.EnvBuilder;
-        builder.mark();
-        builder.enterLoop();
-
-
-    private final EnvBuilder builder = EnvBuilder.INSTANCE;
-import stupidcoder.compile.EnvBuilder;
-        builder.writeConstInt(0);
-        builder.markAndSkip(5); // goto <int>
+1111
+2222
+3333

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Simulator {
-    public static final int DELAY = 20;
+    public static final int DELAY = 30;
     protected List<List<String>> slices;
     private PosManager manager;
     private Robot robot;

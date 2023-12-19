@@ -63,13 +63,36 @@ public class PosManager {
         do {
             p.height += dHeight; //插入子块后，所有父块拉伸
             p.shift(shiftStart, target.height); //移动所有被影响的块
-            shiftStart = p.childId + 1;
+            shiftStart = getChildIndex(p.parent, p) + 1;
             p = p.parent;
         } while (p != null);
         //更新数组
         generatedBlocks[target.userId] = target;
         //开始模拟
         simulator.onBlockInserted(generatedRoot.height - target.height, target);
+    }
+
+    private int getChildIndex(Block parent, Block child) {
+        if (parent == null) {
+            return -1;
+        }
+        int l = 0, r = parent.children.size() - 1;
+        while (l < r) {
+            int m = (l + r) >> 1;
+            Block cur = parent.children.get(m);
+            if (cur == child) {
+                return m;
+            }
+            if (child.childId < cur.childId) {
+                r = m - 1;
+            } else {
+                l = m + 1;
+            }
+        }
+        if (l == r) {
+            return child == parent.children.get(l) ? l : -1;
+        }
+        return -1;
     }
 
     private int getInsertPos(Block child) {
