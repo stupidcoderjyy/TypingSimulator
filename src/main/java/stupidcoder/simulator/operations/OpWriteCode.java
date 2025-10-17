@@ -12,9 +12,11 @@ import java.util.List;
 
 public class OpWriteCode implements IRobotAction {
     private final List<String> slices;
+    private final Simulator simulator;
 
-    public OpWriteCode(List<String> slices) {
+    public OpWriteCode(Simulator simulator, List<String> slices) {
         this.slices = slices;
+        this.simulator = simulator;
     }
 
     @Override
@@ -24,8 +26,8 @@ public class OpWriteCode implements IRobotAction {
         }
         for (int i = 0 ; i < slices.size() - 1 ; i ++) {
             writeSlice(slices.get(i), robot);
-            ActionUtil.clickButton(robot, KeyEvent.VK_ENTER, 1, Simulator.DELAY);
-            ActionUtil.clickButton(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, 10, Simulator.DELAY);
+            ActionUtil.clickButton(robot, KeyEvent.VK_ENTER, 1, simulator.getDelay());
+            ActionUtil.clickButton(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, 10, simulator.getDelay());
         }
         writeSlice(slices.get(slices.size() - 1), robot);
     }
@@ -39,39 +41,39 @@ public class OpWriteCode implements IRobotAction {
             if (b < 0) {
                 input.retract();
                 System.err.println("skipping non ascii char: " + input.readUtfChar());
-                actions['?'].write(b,robot);
+                actions['?'].write(b, simulator);
                 continue;
             }
             if (b == ' ') {
                 spaceCount++;
                 if (spaceCount == 4) {
-                    ActionUtil.clickButton(robot, KeyEvent.VK_TAB, 1, Simulator.DELAY);
+                    ActionUtil.clickButton(robot, KeyEvent.VK_TAB, 1, simulator.getDelay());
                     spaceCount = 0;
                 }
             } else {
                 if (spaceCount > 0) {
-                    ActionUtil.clickButton(robot, KeyEvent.VK_SPACE, spaceCount, Simulator.DELAY);
+                    ActionUtil.clickButton(robot, KeyEvent.VK_SPACE, spaceCount, simulator.getDelay());
                     spaceCount = 0;
                 }
-                actions[b].write(b, robot);
+                actions[b].write(b, simulator);
             }
         }
     }
     
     private interface ICharWriter {
-        void write(int ascii, Robot robot);
+        void write(int ascii, Simulator s);
     }
 
-    private static final ICharWriter NULL = (i, robot) -> {};
+    private static final ICharWriter NULL = (i, s) -> {};
 
     private static final ICharWriter DEFAULT =
-            (i, robot) -> ActionUtil.clickButton(robot, i, 1, Simulator.DELAY >> 2);
+            (i, s) -> ActionUtil.clickButton(s.getRobot(), i, 1, s.getDelay() >> 2);
 
-    private static final ICharWriter UPPER = (i, r) ->
-            ActionUtil.clickButton(r, KeyEvent.VK_SHIFT,(i - 'A') + KeyEvent.VK_A, 1, Simulator.DELAY >> 2);
+    private static final ICharWriter UPPER = (i, s) ->
+            ActionUtil.clickButton(s.getRobot(), KeyEvent.VK_SHIFT,(i - 'A') + KeyEvent.VK_A, 1, s.getDelay() >> 2);
 
     private static final ICharWriter LOWER =
-            (i, r) -> ActionUtil.clickButton(r, (i - 'a') + KeyEvent.VK_A, 1, Simulator.DELAY >> 2);
+            (i, s) -> ActionUtil.clickButton(s.getRobot(), (i - 'a') + KeyEvent.VK_A, 1, s.getDelay() >> 2);
 
     private static final ICharWriter[] actions = new ICharWriter[]{
             NULL,                  /* 00 (NUL) */
@@ -205,11 +207,11 @@ public class OpWriteCode implements IRobotAction {
     };
     
     private static ICharWriter shifted(int keyCode) {
-        return (i, r) -> ActionUtil.clickButton(r,KeyEvent.VK_SHIFT , keyCode, 1, Simulator.DELAY >> 2);
+        return (i, s) -> ActionUtil.clickButton(s.getRobot(), KeyEvent.VK_SHIFT , keyCode, 1, s.getDelay() >> 2);
     }
     
     private static ICharWriter normal(int keyCode) {
-        return (i, r) -> ActionUtil.clickButton(r, keyCode, 1, Simulator.DELAY >> 2);
+        return (i, s) -> ActionUtil.clickButton(s.getRobot(), keyCode, 1, s.getDelay() >> 2);
     }
 
     @Override

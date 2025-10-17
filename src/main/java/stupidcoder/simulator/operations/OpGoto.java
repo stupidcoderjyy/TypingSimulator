@@ -14,9 +14,11 @@ public class OpGoto implements IRobotAction {
     public static final int COMPLEX_EXPAND = 3;
     private final Pos cur, target;
     private final int type;
+    private final Simulator simulator;
 
-    public OpGoto(Pos cur, Pos target, int rootHeight) {
+    public OpGoto(Simulator s, Pos cur, Pos target, int rootHeight) {
         this.cur = cur;
+        this.simulator = s;
         this.target = target;
         if (target.y < rootHeight) {
             this.type = SINGLE_MOVE;
@@ -32,7 +34,7 @@ public class OpGoto implements IRobotAction {
         if (robot == null) {
             return;
         }
-        int delay = Simulator.DELAY / 2;
+        int delay = simulator.getDelay() / 2;
         int downSteps = target.y - cur.y;
         switch (type) {
             case SINGLE_EXPAND -> {

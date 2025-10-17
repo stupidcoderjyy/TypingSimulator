@@ -10,14 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Simulator {
-    public static final int DELAY = 30;
     protected List<List<String>> slices;
+    private int delay = 30;
     private PosManager manager;
     private Robot robot;
     protected int startIndex = 0;
     protected int endIndex = Integer.MAX_VALUE;
     private int waitTime;
-
     private Pos prevEnd = null;
 
     public void run(BufferedInput input, boolean simulate) {
@@ -58,11 +57,11 @@ public class Simulator {
         }
         Pos start = b.start;
         if (prevEnd != null) {
-            runTasK(b, new OpGoto(prevEnd, start, rootHeight));
+            runTasK(b, new OpGoto(this, prevEnd, start, rootHeight));
         } else {
             prevEnd = new Pos(0, 0);
         }
-        runTasK(b, new OpWriteCode(slices.get(b.userId)));
+        runTasK(b, new OpWriteCode(this, slices.get(b.userId)));
         prevEnd.set(start).shift(b.width, b.height - 1); //下一轮的起始位置
     }
 
@@ -82,5 +81,17 @@ public class Simulator {
 
     public void setWaitTime(int waitTime) {
         this.waitTime = waitTime;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public Robot getRobot() {
+        return robot;
     }
 }
