@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'com.stupidcoder'
@@ -16,6 +17,12 @@ tasks.compileJava {
 
 tasks.compileTestJava {
     options.encoding = "utf-8"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'stupidcoder.Main'
+    }
 }
 
 dependencies {

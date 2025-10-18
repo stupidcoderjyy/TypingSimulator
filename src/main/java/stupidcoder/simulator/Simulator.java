@@ -40,7 +40,7 @@ public class Simulator {
     }
 
     public void run(String file, boolean simulate) {
-        this.run(BufferedInput.fromResource(file), simulate);
+        this.run(BufferedInput.fromFile(file), simulate);
     }
 
     protected void onBlockLoaded(Block parent, Block b) {

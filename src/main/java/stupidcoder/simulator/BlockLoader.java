@@ -77,13 +77,12 @@ public class BlockLoader {
             }
         }
         List<String> slices = idToSlices.get(id);
-        if (slices.size() > 0) {
+        if (!slices.isEmpty()) {
             block.width = slices.get(slices.size() - 1).length();
         }
         block.height = height;
         block.start.set(0, offsetY);
         simulator.onBlockLoaded(parent, block);
-        System.out.println("registered block: " + block.userId + " ,parent: " + parent.userId);
     }
 
     private int readId() {
